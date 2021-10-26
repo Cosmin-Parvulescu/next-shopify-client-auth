@@ -1,12 +1,13 @@
 {
   "private": true,
   "scripts": {
-    "dev": "node index.js",
+    "dev": "cross-env NODE_ENV=development node -r dotenv/config ./index.js --watch=./server.js",
     "build": "next build",
-    "start": "cross-env NODE_ENV=production node index.js"
+    "start": "cross-env NODE_ENV=production node ./index.js"
   },
   "dependencies": {
     "@koa/router": "^10.0.0",
+    "@shopify/koa-shopify-auth": "^4.1.4",
     "@shopify/polaris": "^7.1.0",
     "cross-env": "^5.2.0",
     "koa": "^2.13.0",
@@ -18,6 +19,7 @@
     "@babel/core": "^7.15.8",
     "@babel/preset-env": "^7.15.8",
     "@babel/register": "^7.15.3",
+    "dotenv": "^10.0.0",
     "regenerator-runtime": "^0.13.4"
   }
 }
