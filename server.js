@@ -1,3 +1,5 @@
+import "regenerator-runtime/runtime";
+
 const Koa = require('koa')
 const next = require('next')
 const Router = require('@koa/router')
