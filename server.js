@@ -13,10 +13,12 @@ const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()
 
-import ShopTokenSchema from './db/schemas/ShopTokenSchema'
-import { modelFactory } from './db'
+import { ShopToken } from "./models";
 
 import Cryptool from './cryptool';
+import mongoose from "mongoose";
+
+mongoose.connect(process.env.MONGODB_CONNECTION_STRING);
 
 Shopify.Context.initialize({
   API_KEY: process.env.SHOPIFY_API_KEY,
@@ -40,9 +42,7 @@ app.prepare().then(() => {
       afterAuth: async (ctx) => {
         const { shop, accessToken } = ctx.state.shopify
 
-        const shopTokenModel = await modelFactory('ShopToken', ShopTokenSchema);
-
-        await shopTokenModel.findOneAndUpdate({
+        await ShopToken.findOneAndUpdate({
           shop: shop
         }, {
           shop: shop,

@@ -3,9 +3,7 @@ import Shopify from '@shopify/shopify-api';
 
 import { Page, Layout, Card } from "@shopify/polaris";
 import CustomerOrders from '../components/customer-orders';
-
-import ShopTokenSchema from '../db/schemas/ShopTokenSchema'
-import { modelFactory } from '../db'
+import { ShopToken } from '../models';
 
 export default function Index(props) {
   return (
@@ -35,8 +33,7 @@ export async function getServerSideProps(ctx) {
   const shopData = JSON.parse(Cryptool.decrypt(shopCookie));
   const shop = shopData.shop;
 
-  const shopTokenModel = await modelFactory('ShopToken', ShopTokenSchema);
-  const shopTokenDbEntry = await shopTokenModel.findOne({ shop: shop }).exec();
+  const shopTokenDbEntry = await ShopToken.findOne({ shop: shop }).exec();
   if (shopTokenDbEntry === null) {
     return {
       redirect: {
