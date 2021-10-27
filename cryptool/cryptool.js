@@ -17,7 +17,7 @@ class Cryptool {
         ].join("|");
     }
 
-    dencrypt(encryptedText) {
+    decrypt(encryptedText) {
         const [encrypted, iv] = encryptedText.split("|");
         if (!iv) throw new Error("IV not found");
         const decipher = crypto.createDecipheriv(

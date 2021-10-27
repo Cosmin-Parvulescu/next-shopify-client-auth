@@ -4,6 +4,9 @@ import Shopify from '@shopify/shopify-api';
 import { Page, Layout, Card } from "@shopify/polaris";
 import CustomerOrders from '../components/customer-orders';
 
+import ShopTokenSchema from '../db/schemas/ShopTokenSchema'
+import { modelFactory } from '../db'
+
 export default function Index(props) {
   return (
     <Page title="Dashboard">
@@ -29,9 +32,25 @@ export async function getServerSideProps(ctx) {
     }
   }
 
-  const shopData = JSON.parse(Cryptool.dencrypt(shopCookie));
+  const shopData = JSON.parse(Cryptool.decrypt(shopCookie));
+  const shop = shopData.shop;
 
-  const client = new Shopify.Clients.Rest(shopData.shop, shopData.token);
+  const shopTokenModel = await modelFactory('ShopToken', ShopTokenSchema);
+  const shopTokenDbEntry = await shopTokenModel.findOne({ shop: shop }).exec();
+  if (shopTokenDbEntry === null) {
+    return {
+      redirect: {
+        destination: '/install',
+        permanent: false,
+      }
+    }
+  }
+
+  console.log('THIS CAN"T HAVE WORKED JUST LIKE THAT...');
+  const accessToken = Cryptool.decrypt(shopTokenDbEntry.token);
+  console.log(accessToken);
+
+  const client = new Shopify.Clients.Rest(shop, accessToken);
   const customerQryRes = await client.get({
     path: 'customers/search',
     query: {

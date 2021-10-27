@@ -14,7 +14,7 @@ const app = next({ dev })
 const handle = app.getRequestHandler()
 
 import ShopTokenSchema from './db/schemas/ShopTokenSchema'
-import { getDbInstance, modelFactory } from './db'
+import { modelFactory } from './db'
 
 import Cryptool from './cryptool';
 
@@ -40,8 +40,7 @@ app.prepare().then(() => {
       afterAuth: async (ctx) => {
         const { shop, accessToken } = ctx.state.shopify
 
-        const dbInstance = await getDbInstance();
-        const shopTokenModel = modelFactory(dbInstance, 'ShopToken', ShopTokenSchema);
+        const shopTokenModel = modelFactory('ShopToken', ShopTokenSchema);
 
         await shopTokenModel.findOneAndUpdate({
           shop: shop

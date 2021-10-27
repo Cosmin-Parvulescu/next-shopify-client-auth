@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 
 let dbInstance = undefined;
+let modelDict = {};
 
 const getDbInstance = async () => {
     if (dbInstance) {
@@ -12,8 +13,16 @@ const getDbInstance = async () => {
     return dbInstance;
 }
 
-const modelFactory = (dbInstance, name, modelSchema) => {
-    return dbInstance.model(name, modelSchema);
+const modelFactory = async (name, modelSchema) => {
+    if (modelDict[name] != null) {
+        return modelDict[name];
+    }
+
+    const db = await getDbInstance();
+
+    const model = db.model(name, modelSchema);
+    modelDict[name] = model;
+    return modelDict[name];
 }
 
 export {
