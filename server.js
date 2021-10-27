@@ -4,13 +4,16 @@ import shopifyAuth from '@shopify/koa-shopify-auth';
 import Shopify, { ApiVersion } from '@shopify/shopify-api';
 
 const Koa = require('koa')
+const KoaRouter = require('@koa/router')
+
 const next = require('next')
-const Router = require('@koa/router')
 
 const port = parseInt(process.env.PORT, 10) || 3000
 const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()
+
+import Cryptool from './cryptool';
 
 Shopify.Context.initialize({
   API_KEY: process.env.SHOPIFY_API_KEY,
@@ -24,19 +27,29 @@ Shopify.Context.initialize({
 
 app.prepare().then(() => {
   const server = new Koa()
-  const router = new Router()
+  const router = new KoaRouter()
 
-  server.keys = [process.env.SHOPIFY_API_KEY];
+  server.keys = [process.env.SHOPIFY_API_KEY]
 
   server.use(
     shopifyAuth({
       accessMode: 'offline',
       afterAuth: async (ctx) => {
-        const { shop, accessToken } = ctx.state.shopify;
+        const { shop, accessToken } = ctx.state.shopify
 
-        console.log(`${shop}_${accessToken}`);
+        const shopCookieData = JSON.stringify({
+          shop: shop,
+          token: accessToken
+        });
 
-        ctx.redirect('/');
+        ctx.cookies.set('shop', Cryptool.encrypt(shopCookieData), {
+            signed: true,
+            overwrite: true,
+            secure: true
+          }
+        );
+
+        ctx.redirect('/')
       }
     }),
   );
