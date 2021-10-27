@@ -1,7 +1,7 @@
 import Cryptool from '../cryptool';
 import Shopify from '@shopify/shopify-api';
 
-import { Page, Layout, Card, EmptyState, ResourceList } from "@shopify/polaris";
+import { Page, Layout, Card } from "@shopify/polaris";
 import CustomerOrders from '../components/customer-orders';
 
 export default function Index(props) {
@@ -40,12 +40,14 @@ export async function getServerSideProps(ctx) {
     }
   })
 
-  const mappedCustomers = customerQryRes.body.customers.map(c => {
-    return {
-      name: `${c.first_name} ${c.last_name}`,
-      ordersCount: c.orders_count
-    }
-  })
+  const mappedCustomers = customerQryRes.body.customers
+    .filter(c => c.orders_count > 0)
+    .map(c => {
+      return {
+        name: `${c.first_name} ${c.last_name}`,
+        ordersCount: c.orders_count
+      }
+    })
 
   return {
     props: {
