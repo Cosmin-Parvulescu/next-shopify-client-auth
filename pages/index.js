@@ -13,3 +13,22 @@ export default function Index() {
     </Page>
   );
 }
+
+export async function getServerSideProps(ctx) {
+  const shopCookie = ctx.req.cookies['shop'];
+  if (!shopCookie || shopCookie === '') {
+    return {
+      redirect: {
+        destination: '/install',
+        permanent: false,
+      }
+    }
+  }
+
+  return {
+    props: {
+
+    }
+  }
+}
+
