@@ -40,7 +40,7 @@ app.prepare().then(() => {
       afterAuth: async (ctx) => {
         const { shop, accessToken } = ctx.state.shopify
 
-        const shopTokenModel = modelFactory('ShopToken', ShopTokenSchema);
+        const shopTokenModel = await modelFactory('ShopToken', ShopTokenSchema);
 
         await shopTokenModel.findOneAndUpdate({
           shop: shop
