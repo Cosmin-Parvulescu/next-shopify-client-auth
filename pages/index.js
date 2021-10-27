@@ -1,19 +1,17 @@
 import Cryptool from '../cryptool';
 import Shopify from '@shopify/shopify-api';
 
-import { Layout, Page } from "@shopify/polaris";
+import { Page, Layout, Card, EmptyState, ResourceList } from "@shopify/polaris";
 import CustomerOrders from '../components/customer-orders';
 
 export default function Index(props) {
   return (
-    <Page
-      title="App"
-    >
+    <Page title="Dashboard">
       <Layout>
         <Layout.Section>
-          {props.customers && 
-          props.customers.length > 0 && 
-          <CustomerOrders customers={props.customers}></CustomerOrders>}
+          <Card title="Top customers by orders count" sectioned>
+            <CustomerOrders customers={props.customers}></CustomerOrders>
+          </Card>
         </Layout.Section>
       </Layout>
     </Page>
@@ -45,7 +43,7 @@ export async function getServerSideProps(ctx) {
   const mappedCustomers = customerQryRes.body.customers.map(c => {
     return {
       name: `${c.first_name} ${c.last_name}`,
-      orders_count: c.orders_count
+      ordersCount: c.orders_count
     }
   })
 
