@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development node -r dotenv/config ./index.js --watch=./server.js",
     "build": "next build",
-    "start": "cross-env NODE_ENV=production node -r dotenv/config ./index.js"
+    "start": "cross-env NODE_ENV=production node ./index.js"
   },
   "dependencies": {
     "@koa/router": "^10.0.0",
