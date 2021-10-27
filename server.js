@@ -52,8 +52,7 @@ app.prepare().then(() => {
         });
 
         const shopCookieData = JSON.stringify({
-          shop: shop,
-          token: accessToken
+          shop: shop
         })
 
         ctx.cookies.set('shop', Cryptool.encrypt(shopCookieData), {

@@ -46,9 +46,7 @@ export async function getServerSideProps(ctx) {
     }
   }
 
-  console.log('THIS CAN"T HAVE WORKED JUST LIKE THAT...');
   const accessToken = Cryptool.decrypt(shopTokenDbEntry.token);
-  console.log(accessToken);
 
   const client = new Shopify.Clients.Rest(shop, accessToken);
   const customerQryRes = await client.get({
