@@ -13,6 +13,9 @@ const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()
 
+import ShopTokenSchema from './db/schemas/ShopTokenSchema'
+import { getDbInstance, modelFactory } from './db'
+
 import Cryptool from './cryptool';
 
 Shopify.Context.initialize({
@@ -37,17 +40,28 @@ app.prepare().then(() => {
       afterAuth: async (ctx) => {
         const { shop, accessToken } = ctx.state.shopify
 
+        const dbInstance = await getDbInstance();
+        const shopTokenModel = modelFactory(dbInstance, 'ShopToken', ShopTokenSchema);
+
+        await shopTokenModel.findOneAndUpdate({
+          shop: shop
+        }, {
+          shop: shop,
+          token: Cryptool.encrypt(accessToken)
+        }, {
+          upsert: true
+        });
+
         const shopCookieData = JSON.stringify({
           shop: shop,
           token: accessToken
-        });
+        })
 
         ctx.cookies.set('shop', Cryptool.encrypt(shopCookieData), {
-            signed: true,
-            overwrite: true,
-            secure: true
-          }
-        );
+          signed: true,
+          overwrite: true,
+          secure: true
+        })
 
         ctx.redirect('/')
       }
