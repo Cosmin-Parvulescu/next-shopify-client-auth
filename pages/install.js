@@ -11,9 +11,10 @@ export default function Install() {
     <Layout>
       <Layout.Section>
         <Card title="Install our app to your store" sectioned>
-          <Form>
+          <Form onSubmit={handleButtonClick}>
             <FormLayout>
               <TextField
+                focused
                 label="Store name"
                 placeholder="Store name"
                 value={shop}
