@@ -61,10 +61,28 @@ app.prepare().then(() => {
           secure: true
         })
 
+        await Shopify.Webhooks.Registry.register({
+          shop,
+          accessToken,
+          path: "/webhooks",
+          topic: "APP_UNINSTALLED",
+          webhookHandler: async (topic, shop, body) => {
+            await ShopToken.deleteOne({ shop: shop }).exec();
+          },
+        });
+
         ctx.redirect('/')
       }
     }),
   );
+
+  router.post("/webhooks", async (ctx) => {
+    try {
+      await Shopify.Webhooks.Registry.process(ctx.req, ctx.res);
+    } catch (error) {
+      console.log(`Failed to process webhook: ${error}`);
+    }
+  });
 
   router.all('(.*)', async (ctx) => {
     await handle(ctx.req, ctx.res)
