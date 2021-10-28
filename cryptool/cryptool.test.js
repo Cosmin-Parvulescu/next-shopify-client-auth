@@ -1,10 +1,5 @@
 import Cryptool from './cryptool';
 
-require('@babel/register')({
-  presets: ['@babel/preset-env'],
-  ignore: ['node_modules'],
-});
-
 test('Decrypting encrypted string works', () => {
   const cryptool = new Cryptool('ENCRYPTION KEY 🚀');
 
