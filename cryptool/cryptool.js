@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+import crypto from 'crypto'
 
 // https://stackoverflow.com/questions/6953286/how-to-encrypt-data-that-needs-to-be-decrypted-in-node-js
 class Cryptool {

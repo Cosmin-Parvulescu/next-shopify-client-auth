@@ -41,6 +41,8 @@
 
 Node [nodejs/node: Node.js JavaScript runtime (github.com)](https://github.com/nodejs/node)
 Koa [koajs/koa: Expressive middleware for node.js using ES2017 async functions (github.com)](https://github.com/koajs/koa)
+Winston [winstonjs/winston: A logger for just about anything](https://github.com/winstonjs/winston) 
+Mongoose [Automattic/mongoose: MongoDB object modeling designed to work in an asynchronous environment](https://github.com/Automattic/mongoose)
 Koa-shopify-auth [Shopify/koa-shopify-auth: Middleware to authenticate a Koa application with Shopify (github.com)](https://github.com/Shopify/koa-shopify-auth)
 Shopify-node-api [Shopify/shopify-node-api: Shopify Admin API Library for Node. Accelerate development with support for authentication, graphql proxy, webhooks (github.com)](https://github.com/Shopify/shopify-node-api)
 
@@ -48,8 +50,9 @@ Next [vercel/next.js: The React Framework (github.com)](https://github.com/verce
 React [facebook/react: A declarative, efficient, and flexible JavaScript library for building user interfaces. (github.com)](https://github.com/facebook/react)
 Polaris [Shopify/polaris-react: Shopify’s admin product component library (github.com)](https://github.com/Shopify/polaris-react)
 
-Jest [facebook/jest: Delightful JavaScript Testing](https://github.com/facebook/jest)
+Jest [facebook/jest: Delightful JavaScript Testing (github.com)](https://github.com/facebook/jest)
 
+ESLint [eslint/eslint: Find and fix problems in your JavaScript code (github.com)](https://github.com/eslint/eslint)
 
 # Considerations
 
