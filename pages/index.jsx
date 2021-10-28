@@ -22,9 +22,6 @@ function Index(props) {
 }
 
 export async function getServerSideProps(ctx) {
-  const customerService = new CustomerService();
-  const tokenService = new TokenService();
-
   const shopCookie = ctx.req.cookies.shop;
   if (!shopCookie || shopCookie === '') {
     return {
@@ -38,7 +35,7 @@ export async function getServerSideProps(ctx) {
   const shopData = JSON.parse(Cryptool.decrypt(shopCookie));
   const { shop } = shopData;
 
-  const token = await tokenService.getTokenByShop(shop);
+  const token = await TokenService.getTokenByShop(shop);
   if (token === null) {
     return {
       redirect: {
@@ -48,7 +45,7 @@ export async function getServerSideProps(ctx) {
     };
   }
 
-  const top10Customers = await customerService.getTop10CustomersByOrders(shop, token);
+  const top10Customers = await CustomerService.getTop10CustomersByOrders(shop, token);
 
   return {
     props: {

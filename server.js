@@ -44,8 +44,7 @@ app.prepare().then(() => {
       afterAuth: async (ctx) => {
         const { shop, accessToken } = ctx.state.shopify;
 
-        const tokenService = new TokenService();
-        await tokenService.upsertToken(shop, accessToken);
+        await TokenService.upsertToken(shop, accessToken);
 
         ctx.cookies.set('shop', Cryptool.encrypt(JSON.stringify({ shop })), {
           signed: true,
@@ -59,8 +58,7 @@ app.prepare().then(() => {
           path: '/webhooks',
           topic: 'APP_UNINSTALLED',
           webhookHandler: async ({ shopName }) => {
-            const ts = new TokenService();
-            await ts.removeToken(shopName);
+            await TokenService.removeToken(shopName);
           },
         });
 
