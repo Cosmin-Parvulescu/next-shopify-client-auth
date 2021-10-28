@@ -1,3 +1,3 @@
-import ShopToken from './ShopTokenModel'
+import ShopToken from './ShopTokenModel';
 
-export { ShopToken }
+export default ShopToken;

@@ -3,7 +3,8 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development node -r dotenv/config ./index.js --watch=./server.js",
     "build": "next build",
-    "start": "cross-env NODE_ENV=production node ./index.js"
+    "start": "cross-env NODE_ENV=production node ./index.js",
+    "lint": "next lint"
   },
   "dependencies": {
     "@babel/core": "^7.15.8",
@@ -12,17 +13,25 @@
     "@koa/router": "^10.0.0",
     "@shopify/koa-shopify-auth": "^4.1.4",
     "@shopify/polaris": "^7.1.0",
+    "@shopify/shopify-api": "^1.4.3",
     "cross-env": "^5.2.0",
     "koa": "^2.13.0",
     "mongodb": "^4.1.3",
     "mongoose": "^6.0.12",
     "next": "^12.0.0",
+    "prop-types": "^15.7.2",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "regenerator-runtime": "^0.13.4"
   },
   "devDependencies": {
     "dotenv": "^10.0.0",
-    "jest": "^27.3.1",
-    "regenerator-runtime": "^0.13.4"
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-next": "12.0.1",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-react": "^7.26.1",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "jest": "^27.3.1"
   }
 }

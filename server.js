@@ -1,22 +1,23 @@
-import "regenerator-runtime/runtime";
+import 'regenerator-runtime/runtime';
 
 import shopifyAuth from '@shopify/koa-shopify-auth';
 import Shopify, { ApiVersion } from '@shopify/shopify-api';
 
-const Koa = require('koa')
-const KoaRouter = require('@koa/router')
-
-const next = require('next')
-
-const port = parseInt(process.env.PORT, 10) || 3000
-const dev = process.env.NODE_ENV !== 'production'
-const app = next({ dev })
-const handle = app.getRequestHandler()
-
-import { ShopToken } from "./models";
+import mongoose from 'mongoose';
+import ShopToken from './models';
 
 import Cryptool from './cryptool';
-import mongoose from "mongoose";
+
+const Koa = require('koa');
+const KoaRouter = require('@koa/router');
+
+const nextJs = require('next');
+
+const port = parseInt(process.env.PORT, 10) || 3000;
+const dev = process.env.NODE_ENV !== 'production';
+
+const app = nextJs({ dev });
+const handle = app.getRequestHandler();
 
 mongoose.connect(process.env.MONGODB_CONNECTION_STRING);
 
@@ -28,55 +29,55 @@ Shopify.Context.initialize({
   API_VERSION: ApiVersion.October20,
   IS_EMBEDDED_APP: false,
   SESSION_STORAGE: new Shopify.Session.MemorySessionStorage(),
-})
+});
 
 app.prepare().then(() => {
-  const server = new Koa()
-  const router = new KoaRouter()
+  const server = new Koa();
+  const router = new KoaRouter();
 
-  server.keys = [process.env.SHOPIFY_API_KEY]
+  server.keys = [process.env.SHOPIFY_API_KEY];
 
   server.use(
     shopifyAuth({
       accessMode: 'offline',
       afterAuth: async (ctx) => {
-        const { shop, accessToken } = ctx.state.shopify
+        const { shop, accessToken } = ctx.state.shopify;
 
         await ShopToken.findOneAndUpdate({
-          shop: shop
+          shop,
         }, {
-          shop: shop,
-          token: Cryptool.encrypt(accessToken)
+          shop,
+          token: Cryptool.encrypt(accessToken),
         }, {
-          upsert: true
+          upsert: true,
         });
 
         const shopCookieData = JSON.stringify({
-          shop: shop
-        })
+          shop,
+        });
 
         ctx.cookies.set('shop', Cryptool.encrypt(shopCookieData), {
           signed: true,
           overwrite: true,
-          secure: true
-        })
+          secure: true,
+        });
 
         await Shopify.Webhooks.Registry.register({
           shop,
           accessToken,
-          path: "/webhooks",
-          topic: "APP_UNINSTALLED",
-          webhookHandler: async (topic, shop, body) => {
-            await ShopToken.deleteOne({ shop: shop }).exec();
+          path: '/webhooks',
+          topic: 'APP_UNINSTALLED',
+          webhookHandler: async ({ shopName }) => {
+            await ShopToken.deleteOne({ shopName }).exec();
           },
         });
 
-        ctx.redirect('/')
-      }
+        ctx.redirect('/');
+      },
     }),
   );
 
-  router.post("/webhooks", async (ctx) => {
+  router.post('/webhooks', async (ctx) => {
     try {
       await Shopify.Webhooks.Registry.process(ctx.req, ctx.res);
     } catch (error) {
@@ -85,17 +86,17 @@ app.prepare().then(() => {
   });
 
   router.all('(.*)', async (ctx) => {
-    await handle(ctx.req, ctx.res)
-    ctx.respond = false
-  })
+    await handle(ctx.req, ctx.res);
+    ctx.respond = false;
+  });
 
   server.use(async (ctx, next) => {
-    ctx.res.statusCode = 200
-    await next()
-  })
+    ctx.res.statusCode = 200;
+    await next();
+  });
 
-  server.use(router.routes())
+  server.use(router.routes());
   server.listen(port, () => {
-    console.log(`> Ready on http://localhost:${port}`)
-  })
-})
+    console.log(`> Ready on http://localhost:${port}`);
+  });
+});

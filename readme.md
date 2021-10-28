@@ -61,6 +61,8 @@ Encryption keys are mostly the SHOPIFY API KEY, which shouldn't be the case for 
 
 Most of the code was built with a consideration for the happy flow; error cases and edge cases weren't considered all that much.
 
-Some next steps could be refactorization of customer operations into a service.
-
-Some next features could be GraphQL integration for better querying.
+Some next steps could be 
+~~- add linting;~~
+- refactorization of customer operations into a service;
+- GraphQL integration for better querying;
+- Transformation into a Shopify Bridge app.
