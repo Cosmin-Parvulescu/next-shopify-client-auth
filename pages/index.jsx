@@ -22,14 +22,16 @@ function Index(props) {
 }
 
 export async function getServerSideProps(ctx) {
+  const redirect = () => ({
+    redirect: {
+      destination: '/install',
+      permanent: false,
+    },
+  });
+
   const shopCookie = ctx.req.cookies.shop;
   if (!shopCookie || shopCookie === '') {
-    return {
-      redirect: {
-        destination: '/install',
-        permanent: false,
-      },
-    };
+    return redirect();
   }
 
   const shopData = JSON.parse(Cryptool.decrypt(shopCookie));
@@ -37,15 +39,16 @@ export async function getServerSideProps(ctx) {
 
   const token = await TokenService.getTokenByShop(shop);
   if (token === null) {
-    return {
-      redirect: {
-        destination: '/install',
-        permanent: false,
-      },
-    };
+    return redirect();
   }
 
   const top10Customers = await CustomerService.getTop10CustomersByOrders(shop, token);
+  if (top10Customers === null) {
+    // For now, it probably means
+    // that Shopify is not longer authorizing
+    // the token, so we need to reauth
+    return redirect();
+  }
 
   return {
     props: {

@@ -20,19 +20,27 @@ export class Customer {
 
 export default class CustomerService {
   static async getTop10CustomersByOrders(shop, accessToken) {
-    const client = new Shopify.Clients.Rest(shop, accessToken);
-    const customerQryRes = await client.get({
-      path: 'customers/search',
-      query: {
-        order: 'orders_count DESC',
-        limit: 10,
-      },
-    });
+    try {
+      const client = new Shopify.Clients.Rest(shop, accessToken);
+      const customerQryRes = await client.get({
+        path: 'customers/search',
+        query: {
+          order: 'orders_count DESC',
+          limit: 10,
+        },
+      });
 
-    const mappedCustomers = customerQryRes.body.customers
-      .filter((c) => c.orders_count > 0)
-      .map((c) => new Customer(c.first_name, c.last_name, c.orders_count));
+      const mappedCustomers = customerQryRes.body.customers
+        .filter((c) => c.orders_count > 0)
+        .map((c) => new Customer(c.first_name, c.last_name, c.orders_count));
 
-    return mappedCustomers;
+      return mappedCustomers;
+    } catch (ex) {
+      // this should be specific, maybe even higher up the chain
+      // but I want to keep the index page clean
+      console.log(ex);
+    }
+
+    return null;
   }
 }

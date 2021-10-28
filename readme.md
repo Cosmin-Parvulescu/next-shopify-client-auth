@@ -66,7 +66,8 @@ Some next steps could be
 - ~~fix testing;~~
 - ~~refactorization of customer operations into a service;~~
 - ~~refactorization of token operations into a service;~~
-- fix nasty redirect on spotify unauthorized;
+- ~~fix nasty redirect on spotify unauthorized;~~
+- add logging framework;
 - turn custom cookie auth into a middleware;
 - add more tests;
 - GraphQL integration for better querying;
