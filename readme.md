@@ -62,7 +62,9 @@ Encryption keys are mostly the SHOPIFY API KEY, which shouldn't be the case for 
 Most of the code was built with a consideration for the happy flow; error cases and edge cases weren't considered all that much.
 
 Some next steps could be 
-~~- add linting;~~
+- ~~add linting;~~
+- fix testing;
 - refactorization of customer operations into a service;
+- turn custom cookie auth into a middleware;
 - GraphQL integration for better querying;
 - Transformation into a Shopify Bridge app.
