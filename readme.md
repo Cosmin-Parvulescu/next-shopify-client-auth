@@ -64,7 +64,8 @@ Most of the code was built with a consideration for the happy flow; error cases 
 Some next steps could be 
 - ~~add linting;~~
 - fix testing;
-- refactorization of customer operations into a service;
+- ~~refactorization of customer operations into a service;~~
+- ~~refactorization of token operations into a service;~~
 - turn custom cookie auth into a middleware;
 - GraphQL integration for better querying;
 - Transformation into a Shopify Bridge app.
