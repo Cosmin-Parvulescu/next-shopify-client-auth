@@ -79,6 +79,7 @@ app.prepare().then(() => {
         logger.info(`${shop} uninstall hook registered`);
 
         ctx.redirect('/');
+        return;
       },
     }),
   );

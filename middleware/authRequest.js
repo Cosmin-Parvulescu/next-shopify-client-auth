@@ -11,6 +11,7 @@ async function authRequest(ctx, next) {
     logger.warn('No auth cookie present, redirecting to auth');
 
     ctx.redirect('/install');
+    return;
   }
 
   const shopData = JSON.parse(Cryptool.decrypt(shopCookie));
@@ -20,6 +21,7 @@ async function authRequest(ctx, next) {
     const token = await TokenService.getTokenByShop(shop);
     if (token === null) {
       ctx.redirect('/install');
+      return;
     }
 
     logger.info(`Validated ${shop} database token`);
@@ -39,6 +41,7 @@ async function authRequest(ctx, next) {
       logger.warn(`Shopify API connection unauthorized for ${shop}`);
 
       ctx.redirect('/install');
+      return;
     } else {
       logger.error(`Authentication failed for ${shop}: ${e}`);
 
