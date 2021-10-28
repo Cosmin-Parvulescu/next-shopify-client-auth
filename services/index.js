@@ -1,3 +1,4 @@
 import CustomerService from './customer-service';
+import TokenService from './token-service';
 
-export default CustomerService;
+export { CustomerService, TokenService };

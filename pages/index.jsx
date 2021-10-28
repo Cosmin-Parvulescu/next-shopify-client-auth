@@ -1,13 +1,9 @@
 import React from 'react';
-
-
-
 import { Page, Layout, Card } from '@shopify/polaris';
 import PropTypes from 'prop-types';
 import Cryptool from '../cryptool';
 import CustomerOrders from '../components/customer-orders';
-import ShopToken from '../models';
-import CustomerService from '../services';
+import { CustomerService, TokenService } from '../services';
 
 function Index(props) {
   const { customers } = props;
@@ -27,6 +23,7 @@ function Index(props) {
 
 export async function getServerSideProps(ctx) {
   const customerService = new CustomerService();
+  const tokenService = new TokenService();
 
   const shopCookie = ctx.req.cookies.shop;
   if (!shopCookie || shopCookie === '') {
@@ -41,8 +38,8 @@ export async function getServerSideProps(ctx) {
   const shopData = JSON.parse(Cryptool.decrypt(shopCookie));
   const { shop } = shopData;
 
-  const shopTokenDbEntry = await ShopToken.findOne({ shop }).exec();
-  if (shopTokenDbEntry === null) {
+  const token = await tokenService.getTokenByShop(shop);
+  if (token === null) {
     return {
       redirect: {
         destination: '/install',
@@ -51,14 +48,13 @@ export async function getServerSideProps(ctx) {
     };
   }
 
-  const accessToken = Cryptool.decrypt(shopTokenDbEntry.token);
-  const top10Customers = await customerService.getTop10CustomersByOrders(shop, accessToken);
+  const top10Customers = await customerService.getTop10CustomersByOrders(shop, token);
 
   return {
     props: {
-      customers: top10Customers.map(c => ({
+      customers: top10Customers.map((c) => ({
         name: c.name,
-        ordersCount: c.ordersCount
+        ordersCount: c.ordersCount,
       })),
     },
   };
