@@ -1,12 +1,13 @@
 import React from 'react';
 
-import Shopify from '@shopify/shopify-api';
+
 
 import { Page, Layout, Card } from '@shopify/polaris';
 import PropTypes from 'prop-types';
 import Cryptool from '../cryptool';
 import CustomerOrders from '../components/customer-orders';
 import ShopToken from '../models';
+import CustomerService from '../services';
 
 function Index(props) {
   const { customers } = props;
@@ -25,6 +26,8 @@ function Index(props) {
 }
 
 export async function getServerSideProps(ctx) {
+  const customerService = new CustomerService();
+
   const shopCookie = ctx.req.cookies.shop;
   if (!shopCookie || shopCookie === '') {
     return {
@@ -49,26 +52,14 @@ export async function getServerSideProps(ctx) {
   }
 
   const accessToken = Cryptool.decrypt(shopTokenDbEntry.token);
-
-  const client = new Shopify.Clients.Rest(shop, accessToken);
-  const customerQryRes = await client.get({
-    path: 'customers/search',
-    query: {
-      order: 'orders_count DESC',
-      limit: 10,
-    },
-  });
-
-  const mappedCustomers = customerQryRes.body.customers
-    .filter((c) => c.orders_count > 0)
-    .map((c) => ({
-      name: `${c.first_name} ${c.last_name}`,
-      ordersCount: c.orders_count,
-    }));
+  const top10Customers = await customerService.getTop10CustomersByOrders(shop, accessToken);
 
   return {
     props: {
-      customers: mappedCustomers,
+      customers: top10Customers.map(c => ({
+        name: c.name,
+        ordersCount: c.ordersCount
+      })),
     },
   };
 }
