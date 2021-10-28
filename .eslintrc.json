@@ -5,7 +5,10 @@
     "airbnb/hooks"
   ],
   "rules": {
-    
+    "max-classes-per-file": [
+      "error",
+      2
+    ]
   },
   "env": {
     "jest": true
