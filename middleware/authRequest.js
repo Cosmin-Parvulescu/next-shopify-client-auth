@@ -1,12 +1,16 @@
 import Shopify from '@shopify/shopify-api';
 import Cryptool from '../cryptool';
 import { TokenService } from '../services';
+import logger from '../utils';
 
 async function authRequest(ctx, next) {
+  logger.info('Authenticating request');
+
   const shopCookie = ctx.cookies.get('shop', { signed: true });
   if (!shopCookie) {
+    logger.warn('No auth cookie present, redirecting to auth');
+
     ctx.redirect('/install');
-    return;
   }
 
   const shopData = JSON.parse(Cryptool.decrypt(shopCookie));
@@ -16,25 +20,28 @@ async function authRequest(ctx, next) {
     const token = await TokenService.getTokenByShop(shop);
     if (token === null) {
       ctx.redirect('/install');
-      return;
     }
 
-    const client = new Shopify.Clients.Rest(shop, token);
+    logger.info(`Validated ${shop} database token`);
 
-    // This throws a deprecation notice
-    // but it's up to the NODE API library to
-    // implement, hopefully
+    const client = new Shopify.Clients.Rest(shop, token);
     await client.get({
       path: 'metafields',
       query: { limit: 1 },
     });
 
+    logger.info(`Validated ${shop} shopify token`);
+    logger.info('Request authenticated');
+
     await next();
-    return;
   } catch (e) {
     if (e.code === 401) {
+      logger.warn(`Shopify API connection unauthorized for ${shop}`);
+
       ctx.redirect('/install');
     } else {
+      logger.error(`Authentication failed for ${shop}: ${e}`);
+
       throw e;
     }
   }

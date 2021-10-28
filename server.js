@@ -10,6 +10,8 @@ import Cryptool from './cryptool';
 import { TokenService } from './services';
 import authRequest from './middleware';
 
+import logger from './utils';
+
 const Koa = require('koa');
 const KoaRouter = require('@koa/router');
 
@@ -51,6 +53,8 @@ app.prepare().then(() => {
       afterAuth: async (ctx) => {
         const { shop, accessToken } = ctx.state.shopify;
 
+        logger.info(`${shop} authenticated`);
+
         await TokenService.upsertToken(shop, accessToken);
 
         ctx.cookies.set('shop', Cryptool.encrypt(JSON.stringify({ shop })), {
@@ -59,15 +63,20 @@ app.prepare().then(() => {
           secure: true,
         });
 
+        logger.info(`${shop} cookies set`);
+
         await Shopify.Webhooks.Registry.register({
           shop,
           accessToken,
           path: '/webhooks',
           topic: 'APP_UNINSTALLED',
           webhookHandler: async (_topic, shopName) => {
+            logger.info(`Handling ${shop} uninstall`);
             await TokenService.removeToken(shopName);
           },
         });
+
+        logger.info(`${shop} uninstall hook registered`);
 
         ctx.redirect('/');
       },
@@ -78,7 +87,7 @@ app.prepare().then(() => {
     try {
       await Shopify.Webhooks.Registry.process(ctx.req, ctx.res);
     } catch (error) {
-      console.log(`Failed to process webhook: ${error}`);
+      logger.error(error);
     }
   });
 
@@ -96,6 +105,6 @@ app.prepare().then(() => {
 
   server.use(router.routes());
   server.listen(port, () => {
-    console.log(`> Ready on http://localhost:${port}`);
+    logger.info(`Server ready on http://localhost:${port}`);
   });
 });
