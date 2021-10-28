@@ -4,9 +4,10 @@ import shopifyAuth from '@shopify/koa-shopify-auth';
 import Shopify, { ApiVersion } from '@shopify/shopify-api';
 
 import mongoose from 'mongoose';
-import ShopToken from './models';
 
 import Cryptool from './cryptool';
+
+import { TokenService } from './services';
 
 const Koa = require('koa');
 const KoaRouter = require('@koa/router');
@@ -43,20 +44,10 @@ app.prepare().then(() => {
       afterAuth: async (ctx) => {
         const { shop, accessToken } = ctx.state.shopify;
 
-        await ShopToken.findOneAndUpdate({
-          shop,
-        }, {
-          shop,
-          token: Cryptool.encrypt(accessToken),
-        }, {
-          upsert: true,
-        });
+        const tokenService = new TokenService();
+        await tokenService.upsertToken(shop, accessToken);
 
-        const shopCookieData = JSON.stringify({
-          shop,
-        });
-
-        ctx.cookies.set('shop', Cryptool.encrypt(shopCookieData), {
+        ctx.cookies.set('shop', Cryptool.encrypt(JSON.stringify({ shop })), {
           signed: true,
           overwrite: true,
           secure: true,
@@ -68,7 +59,8 @@ app.prepare().then(() => {
           path: '/webhooks',
           topic: 'APP_UNINSTALLED',
           webhookHandler: async ({ shopName }) => {
-            await ShopToken.deleteOne({ shopName }).exec();
+            const ts = new TokenService();
+            await ts.removeToken(shopName);
           },
         });
 
