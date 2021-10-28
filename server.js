@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 import Cryptool from './cryptool';
 
 import { TokenService } from './services';
+import authRequest from './middleware';
 
 const Koa = require('koa');
 const KoaRouter = require('@koa/router');
@@ -31,6 +32,12 @@ Shopify.Context.initialize({
   IS_EMBEDDED_APP: false,
   SESSION_STORAGE: new Shopify.Session.MemorySessionStorage(),
 });
+
+const handleRequest = async (ctx) => {
+  await handle(ctx.req, ctx.res);
+  ctx.respond = false;
+  ctx.res.statusCode = 200;
+};
 
 app.prepare().then(() => {
   const server = new Koa();
@@ -57,7 +64,7 @@ app.prepare().then(() => {
           accessToken,
           path: '/webhooks',
           topic: 'APP_UNINSTALLED',
-          webhookHandler: async ({ shopName }) => {
+          webhookHandler: async (_topic, shopName) => {
             await TokenService.removeToken(shopName);
           },
         });
@@ -75,10 +82,12 @@ app.prepare().then(() => {
     }
   });
 
-  router.all('(.*)', async (ctx) => {
-    await handle(ctx.req, ctx.res);
-    ctx.respond = false;
-  });
+  router.get('/install', handleRequest);
+
+  router.get('(/_next/static/.*)', handleRequest);
+  router.get('/_next/webpack-hmr', handleRequest);
+
+  router.all('(.*)', authRequest, handleRequest);
 
   server.use(async (ctx, next) => {
     ctx.res.statusCode = 200;
