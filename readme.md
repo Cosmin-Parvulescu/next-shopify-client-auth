@@ -1,12 +1,3 @@
-
-# Requirements
-
-- the main page for new non authenticated user asks for a `.myshopify.com` url and has a button to start the oauth flow
-- store details are saved to a MongoDb database
-- the main page when authenticated should list the top 10 customers sorted by number of orders
-- tests are appreciated, even if not required
-
-
 # Stack
 
 |Area|Technology|
